@@ -59,7 +59,8 @@ Function ll
 # Command Line RDP
 Function RDP{
     param ([Parameter(Mandatory=$true)] [string]$Computer)
-    $User = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+    #$User = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+    $User = 'kirk\$bsparks'
 
     if (-not (Test-Path .\RDP.txt)) {
         Read-Host -AsSecureString "Enter Password: " | convertfrom-securestring | out-file .\RDP.txt
@@ -71,7 +72,7 @@ Function RDP{
     $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
     $Process = New-Object System.Diagnostics.Process
     $ProcessInfo.FileName = "$($env:SystemRoot)\system32\cmdkey.exe"
-    write-host $Pass
+    #write-host $Pass
     $ProcessInfo.Arguments = (" /generic:{0} /user:{1} /pass:{2}" -f $Computer, $User, $Pass)
     $Process.StartInfo = $ProcessInfo
     #write-host ("Starting {0}{1}" -f $ProcessInfo.FileName,$ProcessInfo.Arguments)
@@ -83,7 +84,6 @@ Function RDP{
     #write-host ("Starting {0}{1}" -f $ProcessInfo.FileName,$ProcessInfo.Arguments)
     $Process.Start()
 
-    Start-Sleep -s 20
     $ProcessInfo.FileName = "$($env:SystemRoot)\system32\cmdkey.exe"
     $ProcessInfo.Arguments = (" /delete {0}" -f $Computer)
     $Process.StartInfo = $ProcessInfo
@@ -107,8 +107,6 @@ Set-Location $docs
 # SIG # Begin signature block
 # MIIFuQYJKoZIhvcNAQcCoIIFqjCCBaYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUR3fMPkr0DczLNxN5Zd4vj548
-# ZX+gggNCMIIDPjCCAiqgAwIBAgIQTvvEe9tcJppETp7+bkELijAJBgUrDgMCHQUA
 # MCwxKjAoBgNVBAMTIVBvd2VyU2hlbGwgTG9jYWwgQ2VydGlmaWNhdGUgUm9vdDAe
 # Fw0xMjEwMTUwMzAxMjdaFw0zOTEyMzEyMzU5NTlaMBoxGDAWBgNVBAMTD1Bvd2Vy
 # U2hlbGwgVXNlcjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJ3uRLED
@@ -129,11 +127,4 @@ Set-Location $docs
 # EyFQb3dlclNoZWxsIExvY2FsIENlcnRpZmljYXRlIFJvb3QCEE77xHvbXCaaRE6e
 # /m5BC4owCQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJ
 # KoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQB
-# gjcCARUwIwYJKoZIhvcNAQkEMRYEFJxxVXOIgBtSgtdZHf/qDUaofygyMA0GCSqG
-# SIb3DQEBAQUABIIBAIZwHIz1ctUCawPO9ah0m6YncPyc4hxGU4Ijp5ptJ4ORzPtQ
-# znP4+b/5ffHTT3y3R+7LOU3estDrYFRm8w54kxml7hZXJVGs+mztX9zPNuBKy9QI
-# 27hB6kC0+4LvbJ7RBXMjmkY3qkZxJH/CZw3HmZpYV4aElORYm2qcRPWsHJM/k7gU
-# 7ieSKEUoev+IdrGu2vVeC9R7+dhlvHITLi/OAhYDDu7too6j5FUs83HXADtmaeGu
-# GK+9xKCqDdmyKkX9uZWYmt2Y6BF7J45IQY7p8Cp/+8jWhbvryP7Wt2pbe7vAnbPk
-# LePTF8+hgL8jPjRSDVi+7SHgUOHEILbg0jfXkVU=
 # SIG # End signature block
