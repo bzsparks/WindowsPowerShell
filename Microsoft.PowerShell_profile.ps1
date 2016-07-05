@@ -24,7 +24,6 @@ Function Prompt
     # Write the path
     write-host $($(Get-Location).Path.replace($home," ~").replace("\","/")) -foreground Gray -noNewLine
     write-host $(if ($nestedpromptlevel -ge 1) { '>>' }) -noNewLine
-    
     return ">"
 }
 
@@ -57,12 +56,49 @@ Function ll
     $host.ui.rawui.foregroundColor = $origFg 
 }
 
-#Set Alias
-New-Alias ssh putty
-New-Alias scp pscp
-#New-Alias ll dir
-New-Alias subl "$env:ProgramFiles\Sublime Text 3\sublime_text.exe"
-New-Alias vi "$env:ProgramFiles\Sublime Text 3\sublime_text.exe"
+# Command Line RDP
+Function RDP{
+    param ([Parameter(Mandatory=$true)] [string]$Computer)
+    $User = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+
+    if (-not (Test-Path .\RDP.txt)) {
+        Read-Host -AsSecureString "Enter Password: " | convertfrom-securestring | out-file .\RDP.txt
+    }
+
+    $Password = Get-Content .\RDP.txt | convertto-securestring
+    $cred = New-Object System.Management.Automation.PSCredential($User, $Password)
+    $Pass = $cred.GetNetworkCredential().Password
+    $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $Process = New-Object System.Diagnostics.Process
+    $ProcessInfo.FileName = "$($env:SystemRoot)\system32\cmdkey.exe"
+    write-host $Pass
+    $ProcessInfo.Arguments = (" /generic:{0} /user:{1} /pass:{2}" -f $Computer, $User, $Pass)
+    $Process.StartInfo = $ProcessInfo
+    #write-host ("Starting {0}{1}" -f $ProcessInfo.FileName,$ProcessInfo.Arguments)
+    $Process.Start()
+
+    $ProcessInfo.FileName = "$($env:SystemRoot)\system32\mstsc.exe"
+    $ProcessInfo.Arguments = (" /v {0}" -f $Computer)
+    $Process.StartInfo = $ProcessInfo
+    #write-host ("Starting {0}{1}" -f $ProcessInfo.FileName,$ProcessInfo.Arguments)
+    $Process.Start()
+
+    Start-Sleep -s 20
+    $ProcessInfo.FileName = "$($env:SystemRoot)\system32\cmdkey.exe"
+    $ProcessInfo.Arguments = (" /delete {0}" -f $Computer)
+    $Process.StartInfo = $ProcessInfo
+    #write-host ("Starting {0}{1}" -f $ProcessInfo.FileName,$ProcessInfo.Arguments)
+    $Process.Start()
+}
+
+
+#Set Aliases
+Set-Alias ss Select-String
+Set-Alias wh Write-Host
+Set-Alias ssh putty
+Set-Alias scp pscp
+Set-Alias subl "$env:ProgramFiles\Sublime Text 3\sublime_text.exe"
+Set-Alias vi "$env:ProgramFiles\Sublime Text 3\sublime_text.exe"
 
 #Set Get-Location
 $docs = ([environment]::getfolderpath("mydocuments"))
